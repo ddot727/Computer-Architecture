@@ -8,7 +8,7 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.ram = []
+        self.ram = [0] * 8
         self.register = [0] * 8
         self.pc = 0
 
@@ -33,13 +33,16 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
-    def ram_read(address):
+    def ram_read(self, address):
         # `ram_read()` should accept the address to read and return the value stored there.
-        print(ram[address])
+        print(self.ram[address])
         pass
 
-    def ram_write(value, address):
+    def ram_write(self, value, address):
         # `raw_write()` should accept a value to write, and the address to write it to.
+
+        self.ram[address] = value
+
         pass
 
     def alu(self, op, reg_a, reg_b):
