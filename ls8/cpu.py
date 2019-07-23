@@ -34,9 +34,12 @@ class CPU:
             address += 1
 
     def ram_read(address):
+        # `ram_read()` should accept the address to read and return the value stored there.
+        print(ram[address])
         pass
 
     def ram_write(value, address):
+        # `raw_write()` should accept a value to write, and the address to write it to.
         pass
 
     def alu(self, op, reg_a, reg_b):
