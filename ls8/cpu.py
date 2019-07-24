@@ -17,21 +17,37 @@ class CPU:
 
         address = 0
 
+        if len(sys.argv) != 2:
+            print(f"usage: {sys.argv[0]} filename")
+            sys.exit(1)
+
+        try:
+            with open(sys.argv[1]) as f:
+                for line in f:
+                    num = line.split('#', 1)[0]
+                    if num.strip() == '':
+                        continue
+                    self.ram[address] = int(num, 2)
+
+        except FileNotFoundError:
+            print(f"{sys.argv[0]}: {sys.argv[1]} not found")
+            sys.exit(2)
+
         # For now, we've just hardcoded a program:
 
-        program = [
-            # From print8.ls8
-            0b10000010,  # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111,  # PRN R0
-            0b00000000,
-            0b00000001,  # HLT
-        ]
+        # program = [
+        #     # From print8.ls8
+        #     0b10000010,  # LDI R0,8
+        #     0b00000000,
+        #     0b00001000,
+        #     0b01000111,  # PRN R0
+        #     0b00000000,
+        #     0b00000001,  # HLT
+        # ]
 
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        # for instruction in program:
+        #     self.ram[address] = instruction
+        #     address += 1
 
     def ram_read(self, address):
         # `ram_read()` should accept the address to read and return the value stored there.
