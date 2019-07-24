@@ -2,6 +2,11 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
+MUL = 0b10100010
+
 
 class CPU:
     """Main CPU class."""
@@ -28,6 +33,7 @@ class CPU:
                     if num.strip() == '':
                         continue
                     self.ram[address] = int(num, 2)
+                    address += 1
 
         except FileNotFoundError:
             print(f"{sys.argv[0]}: {sys.argv[1]} not found")
@@ -52,21 +58,21 @@ class CPU:
     def ram_read(self, address):
         # `ram_read()` should accept the address to read and return the value stored there.
         return (self.ram[address])
-        pass
 
     def ram_write(self, value, address):
         # `raw_write()` should accept a value to write, and the address to write it to.
 
         self.ram[address] = value
 
-        pass
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
         if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
+            self.register[reg_a] += self.register[reg_b]
         # elif op == "SUB": etc
+        elif op == "MUL":
+            self.register[reg_a] *= self.register[reg_b]
+            return self.register[reg_a]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -99,17 +105,21 @@ class CPU:
             operand_a = self.ram[self.pc + 1]
             operand_b = self.ram[self.pc + 2]
 
-            if IR == 0b00000001:
+            if IR == HLT:
                 running = False
                 self.pc += 1
 
-            elif IR == 0b10000010:
-                self.register[operand_a] = 8
+            elif IR == LDI:
+                self.register[operand_a] = operand_b
                 self.pc += 3
 
-            elif IR == 0b01000111:
+            elif IR == PRN:
                 print(self.register[operand_a])
                 self.pc += 2
+
+            elif IR == MUL:
+                self.alu('MUL', operand_a, operand_b)
+                self.pc += 3
 
             else:
                 print(f"unknown intruction {IR}")
