@@ -8,7 +8,7 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        self.ram = [0] * 8
+        self.ram = [0] * 256
         self.register = [0] * 8
         self.pc = 0
 
@@ -35,7 +35,7 @@ class CPU:
 
     def ram_read(self, address):
         # `ram_read()` should accept the address to read and return the value stored there.
-        print(self.ram[address])
+        return (self.ram[address])
         pass
 
     def ram_write(self, value, address):
@@ -76,4 +76,25 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        running = True
+        while running:
+
+            IR = self.ram[self.pc]
+            operand_a = self.ram[self.pc + 1]
+            operand_b = self.ram[self.pc + 2]
+
+            if IR == 0b00000001:
+                running = False
+                self.pc += 1
+
+            elif IR == 0b10000010:
+                self.register[operand_a] = 8
+                self.pc += 3
+
+            elif IR == 0b01000111:
+                print(self.register[operand_a])
+                self.pc += 2
+
+            else:
+                print(f"unknown intruction {IR}")
+                sys.exit(1)
