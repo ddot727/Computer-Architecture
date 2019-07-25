@@ -2,12 +2,15 @@
 
 import sys
 
+ADD = 0b10100000
 HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
+RET = 0b00010001
 SP = 7
 
 
@@ -20,12 +23,15 @@ class CPU:
         self.register = [0] * 8
         self.pc = 0
         self.branchtable = {}
+        self.branchtable[ADD] = self.handle_ADD
         self.branchtable[HLT] = self.handle_HLT
         self.branchtable[LDI] = self.handle_LDI
         self.branchtable[PRN] = self.handle_PRN
         self.branchtable[MUL] = self.handle_MUL
         self.branchtable[PUSH] = self.handle_PUSH
         self.branchtable[POP] = self.handle_POP
+        self.branchtable[CALL] = self.handle_CALL
+        self.branchtable[RET] = self.handle_RET
 
     def load(self):
         """Load a program into memory."""
@@ -79,6 +85,7 @@ class CPU:
 
         if op == "ADD":
             self.register[reg_a] += self.register[reg_b]
+            return self.register[reg_a]
         # elif op == "SUB": etc
         elif op == "MUL":
             self.register[reg_a] *= self.register[reg_b]
@@ -169,3 +176,19 @@ class CPU:
         self.register[a] = value
         self.register[SP] += 1
         self.pc += 2
+
+    def handle_CALL(self, a, b):
+        return_address = self.pc + 2
+        self.register[SP] -= 1
+        self.ram[self.register[SP]] = return_address
+        subroutine_address = self.register[a]
+        self.pc = subroutine_address
+
+    def handle_RET(self, a, b):
+        return_address = self.ram[self.register[SP]]
+        self.register[SP] += 1
+        self.pc = return_address
+
+    def handle_ADD(self, a, b):
+        self.alu('ADD', a, b)
+        self.pc += 3
