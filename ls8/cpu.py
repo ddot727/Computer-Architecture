@@ -16,6 +16,11 @@ class CPU:
         self.ram = [0] * 256
         self.register = [0] * 8
         self.pc = 0
+        self.branchtable = {}
+        self.branchtable[HLT] = self.handle_HLT
+        self.branchtable[LDI] = self.handle_LDI
+        self.branchtable[PRN] = self.handle_PRN
+        self.branchtable[MUL] = self.handle_MUL
 
     def load(self):
         """Load a program into memory."""
@@ -98,29 +103,51 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        running = True
-        while running:
+        self.running = True
+        while self.running:
 
             IR = self.ram[self.pc]
             operand_a = self.ram[self.pc + 1]
             operand_b = self.ram[self.pc + 2]
 
-            if IR == HLT:
-                running = False
-                self.pc += 1
-
-            elif IR == LDI:
-                self.register[operand_a] = operand_b
-                self.pc += 3
-
-            elif IR == PRN:
-                print(self.register[operand_a])
-                self.pc += 2
-
-            elif IR == MUL:
-                self.alu('MUL', operand_a, operand_b)
-                self.pc += 3
-
-            else:
+            try:
+                self.branchtable[IR](operand_a, operand_b)
+            except:
                 print(f"unknown intruction {IR}")
                 sys.exit(1)
+
+            # if IR == HLT:
+            #     running = False
+            #     self.pc += 1
+
+            # elif IR == LDI:
+            #     self.register[operand_a] = operand_b
+            #     self.pc += 3
+
+            # elif IR == PRN:
+            #     print(self.register[operand_a])
+            #     self.pc += 2
+
+            # elif IR == MUL:
+            #     self.alu('MUL', operand_a, operand_b)
+            #     self.pc += 3
+
+            # else:
+            #     print(f"unknown intruction {IR}")
+            #     sys.exit(1)
+
+    def handle_HLT(self, a, b):
+        self.running = False
+        self.pc += 1
+
+    def handle_LDI(self, a, b):
+        self.register[a] = b
+        self.pc += 3
+
+    def handle_PRN(self, a, b):
+        print(self.register[a])
+        self.pc += 2
+
+    def handle_MUL(self, a, b):
+        self.alu('MUL', a, b)
+        self.pc += 3
