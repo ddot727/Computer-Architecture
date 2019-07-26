@@ -11,6 +11,15 @@ Sprint Challenge
 # 01010101 - JEQ
 # 01010110 - JNE
  
+Flags
+FL bits: 00000LGE
+
+L Less-than: during a CMP, set to 1 if registerA is less than registerB, zero otherwise. 00000100
+
+G Greater-than: during a CMP, set to 1 if registerA is greater than registerB, zero otherwise. 00000010
+
+E Equal: during a CMP, set to 1 if registerA is equal to registerB, zero otherwise. 00000001
+
  '''
 
 
@@ -29,7 +38,6 @@ JMP = 0b01010100
 JEQ = 0b01010101
 JNE = 0b01010110
 SP = 7
-E = 0
 
 
 class CPU:
@@ -40,6 +48,7 @@ class CPU:
         self.ram = [0] * 256
         self.register = [0] * 8
         self.pc = 0
+        self.FL = 0
         self.branchtable = {}
         self.branchtable[ADD] = self.handle_ADD
         self.branchtable[HLT] = self.handle_HLT
@@ -50,6 +59,11 @@ class CPU:
         self.branchtable[POP] = self.handle_POP
         self.branchtable[CALL] = self.handle_CALL
         self.branchtable[RET] = self.handle_RET
+
+        self.branchtable[CMP] = self.handle_CMP
+        self.branchtable[JMP] = self.handle_JMP
+        self.branchtable[JEQ] = self.handle_JEQ
+        self.branchtable[JNE] = self.handle_JNE
 
     def load(self):
         """Load a program into memory."""
@@ -108,6 +122,13 @@ class CPU:
         elif op == "MUL":
             self.register[reg_a] *= self.register[reg_b]
             return self.register[reg_a]
+        elif op == "CMP":
+            if self.register[reg_a] < self.register[reg_b]:
+                self.FL = 0b00000100
+            if self.register[reg_a] > self.register[reg_b]:
+                self.FL = 0b00000010
+            if self.register[reg_a] == self.register[reg_b]:
+                self.FL = 0b00000001
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -167,6 +188,18 @@ class CPU:
             #     print(f"unknown intruction {IR}")
             #     sys.exit(1)
 
+    def handle_ADD(self, a, b):
+        self.alu('ADD', a, b)
+        self.pc += 3
+
+    def handle_MUL(self, a, b):
+        self.alu('MUL', a, b)
+        self.pc += 3
+
+    def handle_CMP(self, a, b):
+        self.alu('CMP', a, b)
+        self.pc += 3
+
     def handle_HLT(self, a, b):
         self.running = False
         self.pc += 1
@@ -178,10 +211,6 @@ class CPU:
     def handle_PRN(self, a, b):
         print(self.register[a])
         self.pc += 2
-
-    def handle_MUL(self, a, b):
-        self.alu('MUL', a, b)
-        self.pc += 3
 
     def handle_PUSH(self, a, b):
         self.register[SP] -= 1
@@ -206,7 +235,3 @@ class CPU:
         return_address = self.ram[self.register[SP]]
         self.register[SP] += 1
         self.pc = return_address
-
-    def handle_ADD(self, a, b):
-        self.alu('ADD', a, b)
-        self.pc += 3
