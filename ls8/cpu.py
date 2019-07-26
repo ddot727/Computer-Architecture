@@ -1,7 +1,20 @@
 """CPU functionality."""
+'''
+Sprint Challenge
+
+ Add the CMP instruction and equal flag to your LS-8.
+# 10100111
+# Equal flag = 0 unless a == b
+ Add the JMP instruction.
+# 01010100
+ Add the JEQ and JNE instructions.
+# 01010101 - JEQ
+# 01010110 - JNE
+ 
+ '''
+
 
 import sys
-
 ADD = 0b10100000
 HLT = 0b00000001
 LDI = 0b10000010
@@ -11,7 +24,12 @@ PUSH = 0b01000101
 POP = 0b01000110
 CALL = 0b01010000
 RET = 0b00010001
+CMP = 0b10100111
+JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110
 SP = 7
+E = 0
 
 
 class CPU:
