@@ -245,3 +245,9 @@ class CPU:
             self.handle_JMP(a, b)
         else:
             self.pc += 2
+
+    def handle_JNE(self, a, b):
+        if self.FL != 1:
+            self.handle_JMP(a, b)
+        else:
+            self.pc += 2
