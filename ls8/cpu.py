@@ -235,3 +235,13 @@ class CPU:
         return_address = self.ram[self.register[SP]]
         self.register[SP] += 1
         self.pc = return_address
+
+    def handle_JMP(self, a, b):
+        jump_address = self.register[a]
+        self.pc = jump_address
+
+    def handle_JEQ(self, a, b):
+        if self.FL == 1:
+            self.handle_JMP(a, b)
+        else:
+            self.pc += 2
