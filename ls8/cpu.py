@@ -59,7 +59,6 @@ class CPU:
         self.branchtable[POP] = self.handle_POP
         self.branchtable[CALL] = self.handle_CALL
         self.branchtable[RET] = self.handle_RET
-
         self.branchtable[CMP] = self.handle_CMP
         self.branchtable[JMP] = self.handle_JMP
         self.branchtable[JEQ] = self.handle_JEQ
